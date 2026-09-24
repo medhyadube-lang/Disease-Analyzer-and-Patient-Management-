@@ -1,0 +1,239 @@
+import tkinter as tk
+from tkinter import messagebox
+
+
+patients = []
+
+def clear_fields():
+    id_entry.delete(0, tk.END)
+    name_entry.delete(0, tk.END)
+    age_entry.delete(0, tk.END)
+    gender_entry.delete(0, tk.END)
+    disease_entry.delete(0, tk.END)
+    phone_entry.delete(0, tk.END)
+
+def add_patient():
+    patient_id = id_entry.get()
+    name = name_entry.get()
+    age = age_entry.get()
+    gender = gender_entry.get()
+    disease = disease_entry.get()
+    phone = phone_entry.get()
+
+    if patient_id == "" or name == "" or age == "" or gender == "" or disease == "" or phone == "":
+        messagebox.showerror("Error", "Please fill all fields.")
+        return
+
+    patient = {
+        "id": patient_id,
+        "name": name,
+        "age": age,
+        "gender": gender,
+        "disease": disease,
+        "phone": phone
+    }
+
+    patients.append(patient)
+
+    messagebox.showinfo("Success", "Patient added successfully!")
+
+    clear_fields()
+
+def view_patients():
+    if len(patients) == 0:
+        messagebox.showinfo("Patients", "No patient records found.")
+        return
+
+    patient_window = tk.Toplevel(root)
+    patient_window.title("Patient Records")
+    patient_window.geometry("600x400")
+
+    text = tk.Text(patient_window, width=70, height=20)
+    text.pack(padx=10, pady=10)
+
+    for patient in patients:
+        text.insert(tk.END, "------------------------------\n")
+        text.insert(tk.END, "Patient ID : " + patient["id"] + "\n")
+        text.insert(tk.END, "Name       : " + patient["name"] + "\n")
+        text.insert(tk.END, "Age        : " + patient["age"] + "\n")
+        text.insert(tk.END, "Gender     : " + patient["gender"] + "\n")
+        text.insert(tk.END, "Disease    : " + patient["disease"] + "\n")
+        text.insert(tk.END, "Phone      : " + patient["phone"] + "\n")
+
+
+def search_patient():
+    patient_id = id_entry.get()
+
+    if patient_id == "":
+        messagebox.showerror("Error", "Enter Patient ID to search.")
+        return
+
+    for patient in patients:
+        if patient["id"] == patient_id:
+
+            name_entry.delete(0, tk.END)
+            name_entry.insert(0, patient["name"])
+
+            age_entry.delete(0, tk.END)
+            age_entry.insert(0, patient["age"])
+
+            gender_entry.delete(0, tk.END)
+            gender_entry.insert(0, patient["gender"])
+
+            disease_entry.delete(0, tk.END)
+            disease_entry.insert(0, patient["disease"])
+
+            phone_entry.delete(0, tk.END)
+            phone_entry.insert(0, patient["phone"])
+
+            messagebox.showinfo("Found", "Patient found!")
+            return
+
+    messagebox.showerror("Error", "Patient not found.")
+
+def update_patient():
+    patient_id = id_entry.get()
+
+    for patient in patients:
+        if patient["id"] == patient_id:
+
+            patient["name"] = name_entry.get()
+            patient["age"] = age_entry.get()
+            patient["gender"] = gender_entry.get()
+            patient["disease"] = disease_entry.get()
+            patient["phone"] = phone_entry.get()
+
+            messagebox.showinfo("Success", "Patient details updated!")
+            clear_fields()
+            return
+
+    messagebox.showerror("Error", "Patient not found.")
+
+def delete_patient():
+    patient_id = id_entry.get()
+
+    for patient in patients:
+        if patient["id"] == patient_id:
+            patients.remove(patient)
+
+            messagebox.showinfo("Success", "Patient deleted successfully!")
+            clear_fields()
+            return
+
+    messagebox.showerror("Error", "Patient not found.")
+
+
+# ---------------- MAIN WINDOW ----------------
+
+root = tk.Tk()
+root.title("Electronic Health Record System")
+root.geometry("650x600")
+
+title = tk.Label(
+    root,
+    text="Electronic Health Record System (EHRS)",
+    font=("Arial", 20, "bold")
+)
+
+title.pack(pady=20)
+
+
+# Input frame
+frame = tk.Frame(root)
+frame.pack(pady=10)
+
+
+# Labels and entry fields
+tk.Label(frame, text="Patient ID").grid(row=0, column=0, padx=10, pady=8)
+id_entry = tk.Entry(frame, width=30)
+id_entry.grid(row=0, column=1)
+
+
+tk.Label(frame, text="Patient Name").grid(row=1, column=0, padx=10, pady=8)
+name_entry = tk.Entry(frame, width=30)
+name_entry.grid(row=1, column=1)
+
+
+tk.Label(frame, text="Age").grid(row=2, column=0, padx=10, pady=8)
+age_entry = tk.Entry(frame, width=30)
+age_entry.grid(row=2, column=1)
+
+
+tk.Label(frame, text="Gender").grid(row=3, column=0, padx=10, pady=8)
+gender_entry = tk.Entry(frame, width=30)
+gender_entry.grid(row=3, column=1)
+
+
+tk.Label(frame, text="Disease").grid(row=4, column=0, padx=10, pady=8)
+disease_entry = tk.Entry(frame, width=30)
+disease_entry.grid(row=4, column=1)
+
+
+tk.Label(frame, text="Phone Number").grid(row=5, column=0, padx=10, pady=8)
+phone_entry = tk.Entry(frame, width=30)
+phone_entry.grid(row=5, column=1)
+
+
+# Buttons
+button_frame = tk.Frame(root)
+button_frame.pack(pady=20)
+
+
+tk.Button(
+    button_frame,
+    text="Add Patient",
+    width=15,
+    command=add_patient
+).grid(row=0, column=0, padx=5, pady=5)
+
+
+tk.Button(
+    button_frame,
+    text="View Patients",
+    width=15,
+    command=view_patients
+).grid(row=0, column=1, padx=5, pady=5)
+
+
+tk.Button(
+    button_frame,
+    text="Search Patient",
+    width=15,
+    command=search_patient
+).grid(row=1, column=0, padx=5, pady=5)
+
+
+tk.Button(
+    button_frame,
+    text="Update Patient",
+    width=15,
+    command=update_patient
+).grid(row=1, column=1, padx=5, pady=5)
+
+
+tk.Button(
+    button_frame,
+    text="Delete Patient",
+    width=15,
+    command=delete_patient
+).grid(row=2, column=0, padx=5, pady=5)
+
+
+tk.Button(
+    button_frame,
+    text="Clear",
+    width=15,
+    command=clear_fields
+).grid(row=2, column=1, padx=5, pady=5)
+
+
+tk.Button(
+    root,
+    text="Exit",
+    width=20,
+    command=root.destroy
+).pack(pady=15)
+
+
+root.mainloop()
+
